@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from src.components.views import router as components_router
+from src.build.views import route as build_router
 
 
 app = FastAPI(
@@ -10,3 +11,4 @@ app = FastAPI(
 )
 
 app.include_router(components_router)
+app.include_router(build_router)
