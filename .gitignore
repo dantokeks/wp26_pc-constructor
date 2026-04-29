@@ -1,6 +1,10 @@
+.venv/
 venv/
 __pycache__/
 *.pyc
 .db
 .idea/
 .vscode/
+node_modules/
+.angular/
+.DS_Store
