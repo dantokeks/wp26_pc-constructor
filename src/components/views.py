@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .repository import cpu_data, gpu_data, ram_data, cpu_cooler_data
+from .repository import storage_data, cpu_data, gpu_data, ram_data, cpu_cooler_data, motherboard_data, power_supply_data
 from . import services
 
 router = APIRouter(prefix="/components", tags=["components"])
@@ -77,5 +77,69 @@ async def get_ram(
     )
 
 @router.get("/cpu-cooler")
-async def get_cpu_cooler(limit: int = 10, offset: int = 0):
-    return cpu_cooler_data[offset : offset + limit]
+async def get_cpu_cooler(
+    min_price: int = None, 
+    max_price: int = None, 
+    limit: int = 10, 
+    offset: int = 0,
+    sort_by_price: bool = False):
+
+    return services.get_cpu_cooler(
+        cpu_cooler_data,
+        min_price=min_price,
+        max_price=max_price,
+        limit=limit,
+        offset=offset,
+        sort_by_price=sort_by_price
+    )
+
+@router.get("/motherboard")
+async def get_motherboard(
+    min_price: int = None, 
+    max_price: int = None, 
+    limit: int = 10, 
+    offset: int = 0, 
+    sort_by_price: bool = False):
+
+    return services.get_motherboard(
+        motherboard_data,
+        min_price=min_price,
+        max_price=max_price,
+        sort_by_price=sort_by_price,
+        limit=limit,
+        offset=offset
+    )
+
+@router.get("/power-supply")
+async def get_power_supply(
+    min_price: int = None, 
+    max_price: int = None, 
+    limit: int = 10, 
+    offset: int = 0, 
+    sort_by_price: bool = False):
+
+    return services.get_power_supply(
+        power_supply_data,
+        min_price=min_price,
+        max_price=max_price,
+        sort_by_price=sort_by_price,
+        limit=limit,
+        offset=offset
+    )
+
+@router.get("/storage(SSD/HDD)")
+async def get_storage(
+    min_price: int = None, 
+    max_price: int = None, 
+    limit: int = 10, 
+    offset: int = 0, 
+    sort_by_price: bool = False):
+
+    return services.get_storage(
+        storage_data,
+        min_price=min_price,
+        max_price=max_price,
+        sort_by_price=sort_by_price,
+        limit=limit,
+        offset=offset
+    )
