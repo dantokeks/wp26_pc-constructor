@@ -129,3 +129,78 @@ def get_ram(
         offset=offset,
         size=size,
     )
+
+def get_cpu_cooler(
+    cpu_cooler_data: List[Dict[str, Any]],
+    limit: int = 50,
+    offset: int = 0,
+    min_price: Optional[int] = None,
+    max_price: Optional[int] = None,
+    sort_by_price: bool = False,
+) -> Dict[str, Any]:
+    #Get CPU cooler with filtering and pagination.
+    return filter_data(
+        cpu_cooler_data,
+        min_price=min_price,
+        max_price=max_price,
+        sort_by_price=sort_by_price,
+        limit=limit,
+        offset=offset,
+    )
+
+def get_motherboard(
+    motherboard_data: List[Dict[str, Any]],
+    limit: int = 50,
+    offset: int = 0,
+    min_price: Optional[int] = None,
+    max_price: Optional[int] = None,
+    sort_by_price: bool = False,
+) -> Dict[str, Any]:
+    #Get Motherboard with filtering and pagination.
+    return filter_data(
+        motherboard_data,
+        min_price=min_price,
+        max_price=max_price,
+        sort_by_price=sort_by_price,
+        limit=limit,
+        offset=offset,
+    )
+
+def get_power_supply(
+    power_supply_data: List[Dict[str, Any]],
+    limit: int = 50,
+    offset: int = 0,
+    min_price: Optional[int] = None,
+    max_price: Optional[int] = None,
+    sort_by_price: bool = False,
+) -> Dict[str, Any]:
+    #Get Power Supply with filtering and pagination.
+    return filter_data(
+        power_supply_data,
+        min_price=min_price,
+        max_price=max_price,
+        sort_by_price=sort_by_price,
+        limit=limit,
+        offset=offset,
+    )
+
+def get_storage(
+    storage_data: List[Dict[str, Any]],
+    limit: int = 50,
+    offset: int = 0,
+    min_price: Optional[int] = None,
+    max_price: Optional[int] = None,
+    size: Optional[int] = None,
+    sort_by_price: bool = False,
+) -> Dict[str, Any]:
+    #Get Storage with filtering and pagination.
+    return filter_data(
+        storage_data,
+        min_price=min_price,
+        max_price=max_price,
+        sort_by_price=sort_by_price,
+        limit=limit,
+        offset=offset,
+        size=size,
+    )
+
