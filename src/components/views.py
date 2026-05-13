@@ -1,33 +1,25 @@
 from fastapi import APIRouter
 from .repository import storage_data, cpu_data, gpu_data, ram_data, cpu_cooler_data, motherboard_data, power_supply_data
 from . import services
+from typing import Literal
 
 router = APIRouter(prefix="/components", tags=["components"])
 
-@router.get("/cpu/{name}")
-async def get_cpu_by_name(name: str):
-    return services.find_by_name(cpu_data, name)
-
-@router.get("/gpu/{name}")
-async def get_gpu_by_name(name: str):
-    return services.find_by_gpu_chipset(gpu_data, name)
-
-@router.get("/ram/{name}")
-async def get_ram_by_name(name: str):
-    return services.find_by_name(ram_data, name)
-
 @router.get("/cpu")
 async def get_cpu(
+    name : str = None,
     limit: int = 10,
     offset: int = 0,
     min_price: int = None,
     max_price: int = None,
     core_count: int = None,
     graphics: bool = None,
-    sort_by_price: bool = False,
+    sort_by_price: bool = False
 ):
+    if name:
+        data = services.find_by_name(cpu_data, name)
     return services.get_cpu(
-        cpu_data,
+        data if name else cpu_data,
         limit=limit,
         offset=offset,
         min_price=min_price,
@@ -39,6 +31,7 @@ async def get_cpu(
 
 @router.get("/gpu")
 async def get_gpu(
+    name : str = None,
     limit: int = 10,
     offset: int = 0,
     min_price: int = None,
@@ -46,8 +39,10 @@ async def get_gpu(
     memory: int = None,
     sort_by_price: bool = False,
 ):
+    if name:
+        data = services.find_by_gpu_chipset(gpu_data, name)
     return services.get_gpu(
-        gpu_data,
+        data if name else gpu_data,
         limit=limit,
         offset=offset,
         min_price=min_price,
@@ -59,6 +54,7 @@ async def get_gpu(
 
 @router.get("/ram")
 async def get_ram(
+    name : str = None,
     limit: int = 10,
     offset: int = 0,
     min_price: int = None,
@@ -66,7 +62,10 @@ async def get_ram(
     size: int = None,
     sort_by_price: bool = False,
 ):
+    if name:
+        data = services.find_by_name(ram_data, name)
     return services.get_ram(
+        data if name else
         ram_data,
         limit=limit,
         offset=offset,
