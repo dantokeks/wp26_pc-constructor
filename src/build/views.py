@@ -15,7 +15,9 @@ def compatible_cpu_cooler(cpu: str,
         return {"error": "CPU not found"}
     if isinstance(cpu_dict, list):
         cpu_dict = cpu_dict[0]
-    return cpu_to_cooler(cpu_dict)
+    result = cpu_to_cooler(cpu_dict)
+    result = result[offset : offset + limit]
+    return result
 
 @route.get("/compatible_cpu_motherboard")
 def compatible_cpu_motherboard(cpu: str, 
@@ -27,7 +29,9 @@ def compatible_cpu_motherboard(cpu: str,
         return {"error": "CPU not found"}
     if isinstance(cpu_dict, list):
         cpu_dict = cpu_dict[0]
-    return cpu_to_motherboard(cpu_dict)
+    result = cpu_to_motherboard(cpu_dict)
+    result = result[offset : offset + limit]
+    return result
 
 @route.get("/compatible_motherboard_ram")
 def compatible_motherboard_ram(motherboard: str, 
@@ -39,7 +43,9 @@ def compatible_motherboard_ram(motherboard: str,
         return {"error": "Motherboard not found"}
     if isinstance(motherboard_dict, list):
         motherboard_dict = motherboard_dict[0]
-    return motherboard_to_ram(motherboard_dict)
+    result = motherboard_to_ram(motherboard_dict)
+    result = result[offset : offset + limit]
+    return result
 
 @route.get("/compatible_psu_to_everything")
 def compatible_psu_to_everything(cpu: str, gpu: str,
@@ -54,4 +60,6 @@ def compatible_psu_to_everything(cpu: str, gpu: str,
         cpu_dict = cpu_dict[0]
     if isinstance(gpu_dict, list):
         gpu_dict = gpu_dict[0]
-    return psu_to_everything(cpu_dict, gpu_dict)
+    result = psu_to_everything(cpu_dict, gpu_dict)
+    result = result[offset : offset + limit]
+    return result

@@ -38,11 +38,11 @@ def filter_data(
     # Attribute filtering (None values are ignored)
     for key, value in filters.items():
         if value is not None:
-            # Специальная обработка для graphics: true/false означает есть/нет
+            # : graphics is a special case where True means has integrated graphics and False means doesn't have integrated graphics
             if key == "graphics":
-                if value is True:  # есть встроенная графика
+                if value is True:  # has integrated graphics
                     result = [item for item in result if item.get(key) is not None]
-                elif value is False:  # нет встроенной графики
+                elif value is False:  # no integrated graphics
                     result = [item for item in result if item.get(key) is None]
             else:
                 result = [item for item in result if item.get(key) == value]
