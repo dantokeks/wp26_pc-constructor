@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from src.components.views import router as components_router
 from src.build.views import route as build_router
 
@@ -8,6 +9,20 @@ app = FastAPI(
     title="PC-Constructor",
     description="PC-Constructor, a tool to help users build their own custom PCs by providing compatibility checks and component recommendations.",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:4200",
+        "http://127.0.0.1:4200",
+    ],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(components_router)
