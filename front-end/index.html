@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PC Constructor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-logo">
+      <span class="logo-bracket">[</span>PC<span class="logo-accent">_</span>CONSTRUCTOR<span class="logo-bracket">]</span>
+    </div>
+    <div class="header-total">
+      <span class="total-label">ИТОГО</span>
+      <span class="total-price" id="total-price">$0</span>
+    </div>
+  </header>
+
+  <!-- MAIN LAYOUT -->
+  <div class="layout">
+
+    <!-- LEFT: Step navigation -->
+    <nav class="steps-nav">
+      <div class="steps-title">СБОРКА</div>
+      <button class="step-btn active" data-tab="cpu" onclick="switchTab('cpu')">
+        <span class="step-num">01</span>
+        <span class="step-name">Процессор</span>
+        <span class="step-check" id="check-cpu">○</span>
+      </button>
+      <button class="step-btn" data-tab="gpu" onclick="switchTab('gpu')">
+        <span class="step-num">02</span>
+        <span class="step-name">Видеокарта</span>
+        <span class="step-check" id="check-gpu">○</span>
+      </button>
+      <button class="step-btn" data-tab="motherboard" onclick="switchTab('motherboard')">
+        <span class="step-num">03</span>
+        <span class="step-name">Материнская плата</span>
+        <span class="step-check" id="check-motherboard">○</span>
+      </button>
+      <button class="step-btn" data-tab="ram" onclick="switchTab('ram')">
+        <span class="step-num">04</span>
+        <span class="step-name">Оперативная память</span>
+        <span class="step-check" id="check-ram">○</span>
+      </button>
+      <button class="step-btn" data-tab="cooler" onclick="switchTab('cooler')">
+        <span class="step-num">05</span>
+        <span class="step-name">Охлаждение</span>
+        <span class="step-check" id="check-cooler">○</span>
+      </button>
+      <button class="step-btn" data-tab="psu" onclick="switchTab('psu')">
+        <span class="step-num">06</span>
+        <span class="step-name">Блок питания</span>
+        <span class="step-check" id="check-psu">○</span>
+      </button>
+      <button class="step-btn" data-tab="storage" onclick="switchTab('storage')">
+        <span class="step-num">07</span>
+        <span class="step-name">Накопитель</span>
+        <span class="step-check" id="check-storage">○</span>
+      </button>
+
+      <div class="nav-divider"></div>
+
+      <button class="step-btn summary-btn" onclick="switchTab('summary')">
+        <span class="step-num">✦</span>
+        <span class="step-name">Моя сборка</span>
+      </button>
+
+      <button class="clear-btn" onclick="clearBuild()">Очистить сборку</button>
+    </nav>
+
+    <!-- CENTER: Tab content -->
+    <main class="content-area">
+
+      <!-- ── CPU TAB ── -->
+      <div class="tab" id="tab-cpu">
+        <div class="tab-header">
+          <h1 class="tab-title">Процессор <span class="tab-subtitle">— CPU</span></h1>
+          <p class="tab-desc">Выберите процессор. После выбора автоматически откроются совместимые материнские платы.</p>
+        </div>
+        <div class="filters-bar">
+          <input class="filter-input" type="number" id="cpu-min" placeholder="Цена от $">
+          <input class="filter-input" type="number" id="cpu-max" placeholder="Цена до $">
+          <input class="filter-input" type="number" id="cpu-cores" placeholder="Ядер (напр. 6)">
+          <label class="filter-checkbox">
+            <input type="checkbox" id="cpu-igpu"> Встроенная графика
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" id="cpu-sort"> По цене ↑
+          </label>
+          <button class="filter-btn" onclick="loadCPU()">Найти</button>
+        </div>
+        <div class="cards-grid" id="results-cpu"></div>
+        <div class="pagination" id="pagination-cpu"></div>
+      </div>
+
+      <!-- ── GPU TAB ── -->
+      <div class="tab hidden" id="tab-gpu">
+        <div class="tab-header">
+          <h1 class="tab-title">Видеокарта <span class="tab-subtitle">— GPU</span></h1>
+          <p class="tab-desc">Выберите видеокарту. После выбора CPU и GPU откроются совместимые блоки питания.</p>
+        </div>
+        <div class="filters-bar">
+          <input class="filter-input" type="number" id="gpu-min" placeholder="Цена от $">
+          <input class="filter-input" type="number" id="gpu-max" placeholder="Цена до $">
+          <input class="filter-input" type="number" id="gpu-memory" placeholder="VRAM (ГБ)">
+          <label class="filter-checkbox">
+            <input type="checkbox" id="gpu-sort"> По цене ↑
+          </label>
+          <button class="filter-btn" onclick="loadGPU()">Найти</button>
+        </div>
+        <div class="cards-grid" id="results-gpu"></div>
+        <div class="pagination" id="pagination-gpu"></div>
+      </div>
+
+      <!-- ── MOTHERBOARD TAB ── -->
+      <div class="tab hidden" id="tab-motherboard">
+        <div class="tab-header">
+          <h1 class="tab-title">Материнская плата <span class="tab-subtitle">— Motherboard</span></h1>
+          <p class="tab-desc" id="mb-desc">Выберите материнскую плату.</p>
+        </div>
+        <div class="filters-bar">
+          <input class="filter-input" type="number" id="mb-min" placeholder="Цена от $">
+          <input class="filter-input" type="number" id="mb-max" placeholder="Цена до $">
+          <label class="filter-checkbox">
+            <input type="checkbox" id="mb-sort"> По цене ↑
+          </label>
+          <button class="filter-btn" onclick="loadMotherboard()">Найти</button>
+        </div>
+        <div class="cards-grid" id="results-motherboard"></div>
+        <div class="pagination" id="pagination-motherboard"></div>
+      </div>
+
+      <!-- ── RAM TAB ── -->
+      <div class="tab hidden" id="tab-ram">
+        <div class="tab-header">
+          <h1 class="tab-title">Оперативная память <span class="tab-subtitle">— RAM</span></h1>
+          <p class="tab-desc" id="ram-desc">Выберите оперативную память.</p>
+        </div>
+        <div class="filters-bar">
+          <input class="filter-input" type="number" id="ram-min" placeholder="Цена от $">
+          <input class="filter-input" type="number" id="ram-max" placeholder="Цена до $">
+          <input class="filter-input" type="number" id="ram-size" placeholder="Объём (ГБ)">
+          <label class="filter-checkbox">
+            <input type="checkbox" id="ram-sort"> По цене ↑
+          </label>
+          <button class="filter-btn" onclick="loadRAM()">Найти</button>
+        </div>
+        <div class="cards-grid" id="results-ram"></div>
+        <div class="pagination" id="pagination-ram"></div>
+      </div>
+
+      <!-- ── COOLER TAB ── -->
+      <div class="tab hidden" id="tab-cooler">
+        <div class="tab-header">
+          <h1 class="tab-title">Охлаждение <span class="tab-subtitle">— CPU Cooler</span></h1>
+          <p class="tab-desc" id="cooler-desc">Выберите систему охлаждения.</p>
+        </div>
+        <div class="filters-bar">
+          <input class="filter-input" type="number" id="cooler-min" placeholder="Цена от $">
+          <input class="filter-input" type="number" id="cooler-max" placeholder="Цена до $">
+          <label class="filter-checkbox">
+            <input type="checkbox" id="cooler-sort"> По цене ↑
+          </label>
+          <button class="filter-btn" onclick="loadCooler()">Найти</button>
+        </div>
+        <div class="cards-grid" id="results-cooler"></div>
+        <div class="pagination" id="pagination-cooler"></div>
+      </div>
+
+      <!-- ── PSU TAB ── -->
+      <div class="tab hidden" id="tab-psu">
+        <div class="tab-header">
+          <h1 class="tab-title">Блок питания <span class="tab-subtitle">— PSU</span></h1>
+          <p class="tab-desc" id="psu-desc">Выберите блок питания.</p>
+        </div>
+        <div class="filters-bar">
+          <input class="filter-input" type="number" id="psu-min" placeholder="Цена от $">
+          <input class="filter-input" type="number" id="psu-max" placeholder="Цена до $">
+          <label class="filter-checkbox">
+            <input type="checkbox" id="psu-sort"> По цене ↑
+          </label>
+          <button class="filter-btn" onclick="loadPSU()">Найти</button>
+        </div>
+        <div class="cards-grid" id="results-psu"></div>
+        <div class="pagination" id="pagination-psu"></div>
+      </div>
+
+      <!-- ── STORAGE TAB ── -->
+      <div class="tab hidden" id="tab-storage">
+        <div class="tab-header">
+          <h1 class="tab-title">Накопитель <span class="tab-subtitle">— Storage</span></h1>
+          <p class="tab-desc">Выберите SSD или HDD накопитель.</p>
+        </div>
+        <div class="filters-bar">
+          <input class="filter-input" type="number" id="storage-min" placeholder="Цена от $">
+          <input class="filter-input" type="number" id="storage-max" placeholder="Цена до $">
+          <label class="filter-checkbox">
+            <input type="checkbox" id="storage-sort"> По цене ↑
+          </label>
+          <button class="filter-btn" onclick="loadStorage()">Найти</button>
+        </div>
+        <div class="cards-grid" id="results-storage"></div>
+        <div class="pagination" id="pagination-storage"></div>
+      </div>
+
+      <!-- ── SUMMARY TAB ── -->
+      <div class="tab hidden" id="tab-summary">
+        <div class="tab-header">
+          <h1 class="tab-title">Моя сборка <span class="tab-subtitle">— Summary</span></h1>
+          <p class="tab-desc">Итоговая конфигурация вашего ПК.</p>
+        </div>
+        <div id="summary-content"></div>
+      </div>
+
+    </main>
+
+    <!-- RIGHT: PC Visual -->
+    <aside class="pc-panel">
+      <div class="pc-visual-title">ВИЗУАЛИЗАЦИЯ</div>
+      <div class="pc-case">
+        <!-- PC SVG illustration -->
+        <svg class="pc-svg" viewBox="0 0 160 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Case body -->
+          <rect x="20" y="10" width="120" height="220" rx="8" fill="#0d0d0f" stroke="#2a2a35" stroke-width="1.5"/>
+          <!-- Case top vent -->
+          <rect x="35" y="18" width="90" height="4" rx="2" fill="#1a1a22"/>
+          <rect x="45" y="18" width="2" height="4" fill="#2a2a35"/>
+          <rect x="52" y="18" width="2" height="4" fill="#2a2a35"/>
+          <rect x="59" y="18" width="2" height="4" fill="#2a2a35"/>
+          <rect x="66" y="18" width="2" height="4" fill="#2a2a35"/>
+          <rect x="73" y="18" width="2" height="4" fill="#2a2a35"/>
+          <rect x="80" y="18" width="2" height="4" fill="#2a2a35"/>
+          <rect x="87" y="18" width="2" height="4" fill="#2a2a35"/>
+          <rect x="94" y="18" width="2" height="4" fill="#2a2a35"/>
+          <rect x="101" y="18" width="2" height="4" fill="#2a2a35"/>
+          <rect x="108" y="18" width="2" height="4" fill="#2a2a35"/>
+          <!-- Glass panel area -->
+          <rect x="28" y="30" width="104" height="170" rx="4" fill="#111118" stroke="#1e1e2a" stroke-width="1"/>
+          <!-- Motherboard bg -->
+          <rect x="34" y="36" width="92" height="118" rx="3" fill="#0a1628" stroke="#1a2a3a" stroke-width="0.5" id="mb-board"/>
+          <!-- CPU slot -->
+          <g id="slot-cpu">
+            <rect x="52" y="52" width="30" height="30" rx="2" fill="#0d1f0d" stroke="#1a3a1a" stroke-width="0.5"/>
+            <text x="67" y="70" text-anchor="middle" font-family="DM Mono, monospace" font-size="5" fill="#1a3a1a">CPU</text>
+          </g>
+          <!-- RAM slots -->
+          <g id="slot-ram">
+            <rect x="88" y="52" width="8" height="40" rx="1" fill="#0d0d1f" stroke="#1a1a3a" stroke-width="0.5"/>
+            <rect x="98" y="52" width="8" height="40" rx="1" fill="#0d0d1f" stroke="#1a1a3a" stroke-width="0.5"/>
+          </g>
+          <!-- GPU slot -->
+          <g id="slot-gpu">
+            <rect x="36" y="100" width="88" height="22" rx="2" fill="#1a0d0d" stroke="#3a1a1a" stroke-width="0.5"/>
+            <text x="80" y="114" text-anchor="middle" font-family="DM Mono, monospace" font-size="5" fill="#3a1a1a">GPU</text>
+          </g>
+          <!-- Storage slot -->
+          <g id="slot-storage">
+            <rect x="36" y="130" width="35" height="18" rx="2" fill="#0d1a1a" stroke="#1a3a3a" stroke-width="0.5"/>
+            <text x="53" y="142" text-anchor="middle" font-family="DM Mono, monospace" font-size="4.5" fill="#1a3a3a">SSD</text>
+          </g>
+          <!-- PSU area -->
+          <g id="slot-psu">
+            <rect x="28" y="210" width="104" height="12" rx="2" fill="#0d0d0d" stroke="#222" stroke-width="0.5"/>
+            <text x="80" y="219" text-anchor="middle" font-family="DM Mono, monospace" font-size="4.5" fill="#222">PSU</text>
+          </g>
+          <!-- Cooler hint -->
+          <g id="slot-cooler">
+            <circle cx="67" cy="67" r="14" fill="none" stroke="#1a2a1a" stroke-width="0.5" stroke-dasharray="2 2"/>
+          </g>
+          <!-- Front panel -->
+          <rect x="28" y="205" width="104" height="5" rx="1" fill="#0d0d0f" stroke="#1e1e2a" stroke-width="0.5"/>
+          <!-- Power button -->
+          <circle cx="120" cy="207" r="3" fill="#111" stroke="#222" stroke-width="0.5"/>
+        </svg>
+
+        <!-- Active parts overlay — filled by JS -->
+        <div class="pc-parts-overlay" id="pc-parts-overlay"></div>
+      </div>
+
+      <!-- Build summary list in panel -->
+      <div class="panel-build-list" id="panel-build-list">
+        <div class="panel-empty">Начните добавлять компоненты</div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- TOAST notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
