@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +16,7 @@
       <span class="logo-bracket">[</span>PC<span class="logo-accent">_</span>CONSTRUCTOR<span class="logo-bracket">]</span>
     </div>
     <div class="header-total">
-      <span class="total-label">ИТОГО</span>
+      <span class="total-label">TOTAL</span>
       <span class="total-price" id="total-price">$0</span>
     </div>
   </header>
@@ -26,40 +26,40 @@
 
     <!-- LEFT: Step navigation -->
     <nav class="steps-nav">
-      <div class="steps-title">СБОРКА</div>
+      <div class="steps-title">BUILD</div>
       <button class="step-btn active" data-tab="cpu" onclick="switchTab('cpu')">
         <span class="step-num">01</span>
-        <span class="step-name">Процессор</span>
+        <span class="step-name">Processor</span>
         <span class="step-check" id="check-cpu">○</span>
       </button>
-      <button class="step-btn" data-tab="gpu" onclick="switchTab('gpu')">
-        <span class="step-num">02</span>
-        <span class="step-name">Видеокарта</span>
-        <span class="step-check" id="check-gpu">○</span>
-      </button>
       <button class="step-btn" data-tab="motherboard" onclick="switchTab('motherboard')">
-        <span class="step-num">03</span>
-        <span class="step-name">Материнская плата</span>
+        <span class="step-num">02</span>
+        <span class="step-name">Motherboard</span>
         <span class="step-check" id="check-motherboard">○</span>
       </button>
       <button class="step-btn" data-tab="ram" onclick="switchTab('ram')">
-        <span class="step-num">04</span>
-        <span class="step-name">Оперативная память</span>
+        <span class="step-num">03</span>
+        <span class="step-name">RAM</span>
         <span class="step-check" id="check-ram">○</span>
       </button>
       <button class="step-btn" data-tab="cooler" onclick="switchTab('cooler')">
-        <span class="step-num">05</span>
-        <span class="step-name">Охлаждение</span>
+        <span class="step-num">04</span>
+        <span class="step-name">Cooling</span>
         <span class="step-check" id="check-cooler">○</span>
+      </button>
+      <button class="step-btn" data-tab="gpu" onclick="switchTab('gpu')">
+        <span class="step-num">05</span>
+        <span class="step-name">Video card</span>
+        <span class="step-check" id="check-gpu">○</span>
       </button>
       <button class="step-btn" data-tab="psu" onclick="switchTab('psu')">
         <span class="step-num">06</span>
-        <span class="step-name">Блок питания</span>
+        <span class="step-name">Power supply</span>
         <span class="step-check" id="check-psu">○</span>
       </button>
       <button class="step-btn" data-tab="storage" onclick="switchTab('storage')">
         <span class="step-num">07</span>
-        <span class="step-name">Накопитель</span>
+        <span class="step-name">Storage device</span>
         <span class="step-check" id="check-storage">○</span>
       </button>
 
@@ -67,10 +67,10 @@
 
       <button class="step-btn summary-btn" onclick="switchTab('summary')">
         <span class="step-num">✦</span>
-        <span class="step-name">Моя сборка</span>
+        <span class="step-name">My build</span>
       </button>
 
-      <button class="clear-btn" onclick="clearBuild()">Очистить сборку</button>
+      <button class="clear-btn" onclick="clearBuild()">Clear build</button>
     </nav>
 
     <!-- CENTER: Tab content -->
@@ -79,20 +79,21 @@
       <!-- ── CPU TAB ── -->
       <div class="tab" id="tab-cpu">
         <div class="tab-header">
-          <h1 class="tab-title">Процессор <span class="tab-subtitle">— CPU</span></h1>
-          <p class="tab-desc">Выберите процессор. После выбора автоматически откроются совместимые материнские платы.</p>
+          <h1 class="tab-title">Processor <span class="tab-subtitle">— CPU</span></h1>
+          <p class="tab-desc">Choose a processor. After selection, compatible motherboards will open automatically.</p>
         </div>
         <div class="filters-bar">
-          <input class="filter-input" type="number" id="cpu-min" placeholder="Цена от $">
-          <input class="filter-input" type="number" id="cpu-max" placeholder="Цена до $">
-          <input class="filter-input" type="number" id="cpu-cores" placeholder="Ядер (напр. 6)">
+          <input class="filter-input" type="search" id="cpu-search" placeholder="Search processor">
+          <input class="filter-input" type="number" id="cpu-min" placeholder="Price from $">
+          <input class="filter-input" type="number" id="cpu-max" placeholder="Price to $">
+          <input class="filter-input" type="number" id="cpu-cores" placeholder="Cores (e.g. 6)">
           <label class="filter-checkbox">
-            <input type="checkbox" id="cpu-igpu"> Встроенная графика
+            <input type="checkbox" id="cpu-igpu"> Integrated graphics
           </label>
           <label class="filter-checkbox">
-            <input type="checkbox" id="cpu-sort"> По цене ↑
+            <input type="checkbox" id="cpu-sort"> Price ↑
           </label>
-          <button class="filter-btn" onclick="loadCPU()">Найти</button>
+          <button class="filter-btn" onclick="loadCPU()">Search</button>
         </div>
         <div class="cards-grid" id="results-cpu"></div>
         <div class="pagination" id="pagination-cpu"></div>
@@ -101,17 +102,18 @@
       <!-- ── GPU TAB ── -->
       <div class="tab hidden" id="tab-gpu">
         <div class="tab-header">
-          <h1 class="tab-title">Видеокарта <span class="tab-subtitle">— GPU</span></h1>
-          <p class="tab-desc">Выберите видеокарту. После выбора CPU и GPU откроются совместимые блоки питания.</p>
+          <h1 class="tab-title">Video card <span class="tab-subtitle">— GPU</span></h1>
+          <p class="tab-desc">Choose a video card. After CPU and GPU selection, compatible power supplies will open.</p>
         </div>
         <div class="filters-bar">
-          <input class="filter-input" type="number" id="gpu-min" placeholder="Цена от $">
-          <input class="filter-input" type="number" id="gpu-max" placeholder="Цена до $">
-          <input class="filter-input" type="number" id="gpu-memory" placeholder="VRAM (ГБ)">
+          <input class="filter-input" type="search" id="gpu-search" placeholder="Search GPU chipset">
+          <input class="filter-input" type="number" id="gpu-min" placeholder="Price from $">
+          <input class="filter-input" type="number" id="gpu-max" placeholder="Price to $">
+          <input class="filter-input" type="number" id="gpu-memory" placeholder="VRAM (GB)">
           <label class="filter-checkbox">
-            <input type="checkbox" id="gpu-sort"> По цене ↑
+            <input type="checkbox" id="gpu-sort"> Price ↑
           </label>
-          <button class="filter-btn" onclick="loadGPU()">Найти</button>
+          <button class="filter-btn" onclick="loadGPU()">Search</button>
         </div>
         <div class="cards-grid" id="results-gpu"></div>
         <div class="pagination" id="pagination-gpu"></div>
@@ -120,16 +122,17 @@
       <!-- ── MOTHERBOARD TAB ── -->
       <div class="tab hidden" id="tab-motherboard">
         <div class="tab-header">
-          <h1 class="tab-title">Материнская плата <span class="tab-subtitle">— Motherboard</span></h1>
-          <p class="tab-desc" id="mb-desc">Выберите материнскую плату.</p>
+          <h1 class="tab-title">Motherboard <span class="tab-subtitle">— Motherboard</span></h1>
+          <p class="tab-desc" id="mb-desc">Choose a motherboard.</p>
         </div>
         <div class="filters-bar">
-          <input class="filter-input" type="number" id="mb-min" placeholder="Цена от $">
-          <input class="filter-input" type="number" id="mb-max" placeholder="Цена до $">
+          <input class="filter-input" type="search" id="mb-search" placeholder="Search motherboard">
+          <input class="filter-input" type="number" id="mb-min" placeholder="Price from $">
+          <input class="filter-input" type="number" id="mb-max" placeholder="Price to $">
           <label class="filter-checkbox">
-            <input type="checkbox" id="mb-sort"> По цене ↑
+            <input type="checkbox" id="mb-sort"> Price ↑
           </label>
-          <button class="filter-btn" onclick="loadMotherboard()">Найти</button>
+          <button class="filter-btn" onclick="loadMotherboard()">Search</button>
         </div>
         <div class="cards-grid" id="results-motherboard"></div>
         <div class="pagination" id="pagination-motherboard"></div>
@@ -138,17 +141,18 @@
       <!-- ── RAM TAB ── -->
       <div class="tab hidden" id="tab-ram">
         <div class="tab-header">
-          <h1 class="tab-title">Оперативная память <span class="tab-subtitle">— RAM</span></h1>
-          <p class="tab-desc" id="ram-desc">Выберите оперативную память.</p>
+          <h1 class="tab-title">Memory <span class="tab-subtitle">— RAM</span></h1>
+          <p class="tab-desc" id="ram-desc">Choose memory.</p>
         </div>
         <div class="filters-bar">
-          <input class="filter-input" type="number" id="ram-min" placeholder="Цена от $">
-          <input class="filter-input" type="number" id="ram-max" placeholder="Цена до $">
-          <input class="filter-input" type="number" id="ram-size" placeholder="Объём (ГБ)">
+          <input class="filter-input" type="search" id="ram-search" placeholder="Search RAM">
+          <input class="filter-input" type="number" id="ram-min" placeholder="Price from $">
+          <input class="filter-input" type="number" id="ram-max" placeholder="Price to $">
+          <input class="filter-input" type="number" id="ram-size" placeholder="Capacity (GB)">
           <label class="filter-checkbox">
-            <input type="checkbox" id="ram-sort"> По цене ↑
+            <input type="checkbox" id="ram-sort"> Price ↑
           </label>
-          <button class="filter-btn" onclick="loadRAM()">Найти</button>
+          <button class="filter-btn" onclick="loadRAM()">Search</button>
         </div>
         <div class="cards-grid" id="results-ram"></div>
         <div class="pagination" id="pagination-ram"></div>
@@ -157,16 +161,17 @@
       <!-- ── COOLER TAB ── -->
       <div class="tab hidden" id="tab-cooler">
         <div class="tab-header">
-          <h1 class="tab-title">Охлаждение <span class="tab-subtitle">— CPU Cooler</span></h1>
-          <p class="tab-desc" id="cooler-desc">Выберите систему охлаждения.</p>
+          <h1 class="tab-title">Cooling <span class="tab-subtitle">— CPU Cooler</span></h1>
+          <p class="tab-desc" id="cooler-desc">Choose a cooling system.</p>
         </div>
         <div class="filters-bar">
-          <input class="filter-input" type="number" id="cooler-min" placeholder="Цена от $">
-          <input class="filter-input" type="number" id="cooler-max" placeholder="Цена до $">
+          <input class="filter-input" type="search" id="cooler-search" placeholder="Search cooler">
+          <input class="filter-input" type="number" id="cooler-min" placeholder="Price from $">
+          <input class="filter-input" type="number" id="cooler-max" placeholder="Price to $">
           <label class="filter-checkbox">
-            <input type="checkbox" id="cooler-sort"> По цене ↑
+            <input type="checkbox" id="cooler-sort"> Price ↑
           </label>
-          <button class="filter-btn" onclick="loadCooler()">Найти</button>
+          <button class="filter-btn" onclick="loadCooler()">Search</button>
         </div>
         <div class="cards-grid" id="results-cooler"></div>
         <div class="pagination" id="pagination-cooler"></div>
@@ -175,16 +180,17 @@
       <!-- ── PSU TAB ── -->
       <div class="tab hidden" id="tab-psu">
         <div class="tab-header">
-          <h1 class="tab-title">Блок питания <span class="tab-subtitle">— PSU</span></h1>
-          <p class="tab-desc" id="psu-desc">Выберите блок питания.</p>
+          <h1 class="tab-title">Power supply <span class="tab-subtitle">— PSU</span></h1>
+          <p class="tab-desc" id="psu-desc">Choose a power supply.</p>
         </div>
         <div class="filters-bar">
-          <input class="filter-input" type="number" id="psu-min" placeholder="Цена от $">
-          <input class="filter-input" type="number" id="psu-max" placeholder="Цена до $">
+          <input class="filter-input" type="search" id="psu-search" placeholder="Search power supply">
+          <input class="filter-input" type="number" id="psu-min" placeholder="Price from $">
+          <input class="filter-input" type="number" id="psu-max" placeholder="Price to $">
           <label class="filter-checkbox">
-            <input type="checkbox" id="psu-sort"> По цене ↑
+            <input type="checkbox" id="psu-sort"> Price ↑
           </label>
-          <button class="filter-btn" onclick="loadPSU()">Найти</button>
+          <button class="filter-btn" onclick="loadPSU()">Search</button>
         </div>
         <div class="cards-grid" id="results-psu"></div>
         <div class="pagination" id="pagination-psu"></div>
@@ -193,16 +199,17 @@
       <!-- ── STORAGE TAB ── -->
       <div class="tab hidden" id="tab-storage">
         <div class="tab-header">
-          <h1 class="tab-title">Накопитель <span class="tab-subtitle">— Storage</span></h1>
-          <p class="tab-desc">Выберите SSD или HDD накопитель.</p>
+          <h1 class="tab-title">Storage device <span class="tab-subtitle">— Storage</span></h1>
+          <p class="tab-desc">Choose an SSD or HDD storage device.</p>
         </div>
         <div class="filters-bar">
-          <input class="filter-input" type="number" id="storage-min" placeholder="Цена от $">
-          <input class="filter-input" type="number" id="storage-max" placeholder="Цена до $">
+          <input class="filter-input" type="search" id="storage-search" placeholder="Search storage">
+          <input class="filter-input" type="number" id="storage-min" placeholder="Price from $">
+          <input class="filter-input" type="number" id="storage-max" placeholder="Price to $">
           <label class="filter-checkbox">
-            <input type="checkbox" id="storage-sort"> По цене ↑
+            <input type="checkbox" id="storage-sort"> Price ↑
           </label>
-          <button class="filter-btn" onclick="loadStorage()">Найти</button>
+          <button class="filter-btn" onclick="loadStorage()">Search</button>
         </div>
         <div class="cards-grid" id="results-storage"></div>
         <div class="pagination" id="pagination-storage"></div>
@@ -211,8 +218,8 @@
       <!-- ── SUMMARY TAB ── -->
       <div class="tab hidden" id="tab-summary">
         <div class="tab-header">
-          <h1 class="tab-title">Моя сборка <span class="tab-subtitle">— Summary</span></h1>
-          <p class="tab-desc">Итоговая конфигурация вашего ПК.</p>
+          <h1 class="tab-title">My build <span class="tab-subtitle">— Summary</span></h1>
+          <p class="tab-desc">Final configuration of your PC.</p>
         </div>
         <div id="summary-content"></div>
       </div>
@@ -221,7 +228,7 @@
 
     <!-- RIGHT: PC Visual -->
     <aside class="pc-panel">
-      <div class="pc-visual-title">ВИЗУАЛИЗАЦИЯ</div>
+      <div class="pc-visual-title">VISUALIZATION</div>
       <div class="pc-case">
         <!-- PC SVG illustration -->
         <svg class="pc-svg" viewBox="0 0 160 260" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -284,7 +291,7 @@
 
       <!-- Build summary list in panel -->
       <div class="panel-build-list" id="panel-build-list">
-        <div class="panel-empty">Начните добавлять компоненты</div>
+        <div class="panel-empty">Start adding components</div>
       </div>
     </aside>
 

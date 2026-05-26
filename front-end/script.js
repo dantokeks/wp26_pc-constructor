@@ -48,7 +48,7 @@ async function fetchAndRender(url, containerId, paginationId, type, offset, spec
   const pagination  = document.getElementById(paginationId);
 
   // Показать спиннер
-  container.innerHTML = `<div class="state-msg"><div class="loading-dots">Загрузка</div></div>`;
+  container.innerHTML = `<div class="state-msg"><div class="loading-dots">Loading</div></div>`;
 
   try {
     const res  = await fetch(url);
@@ -60,7 +60,7 @@ async function fetchAndRender(url, containerId, paginationId, type, offset, spec
     const items = data.items ?? data; // /build/* возвращает массив напрямую
 
     if (!items || items.length === 0) {
-      container.innerHTML = `<div class="state-msg"><div class="icon">○</div>Ничего не найдено. Попробуйте изменить фильтры.</div>`;
+      container.innerHTML = `<div class="state-msg"><div class="icon">○</div>No results found. Try changing the filters.</div>`;
       pagination.innerHTML = '';
       return;
     }
@@ -87,8 +87,8 @@ async function fetchAndRender(url, containerId, paginationId, type, offset, spec
     container.innerHTML = `
       <div class="state-msg">
         <div class="icon">⚠</div>
-        Не удалось подключиться к API.<br>
-        <span style="font-size:11px;color:var(--text3)">Убедитесь что бэкенд запущен на ${API}</span>
+        Could not connect to the API.<br>
+        <span style="font-size:11px;color:var(--text3)">Make sure the backend is running at ${API}</span>
       </div>`;
     pagination.innerHTML = '';
   }
@@ -100,7 +100,7 @@ function renderCard(item, type, specs) {
   const price     = item.price != null ? `$${item.price}` : null;
   const priceHtml = price
     ? `<span class="card-price">${price}</span>`
-    : `<span class="card-price na">цена не указана</span>`;
+    : `<span class="card-price na">price not specified</span>`;
 
   // Сохраняем item как JSON в data-атрибут — потом читаем при клике
   const itemJson = escapeAttr(JSON.stringify(item));
@@ -117,7 +117,7 @@ function renderCard(item, type, specs) {
       <div class="card-footer">
         ${priceHtml}
         <button class="card-select-btn" onclick='selectPart("${type}", ${itemJson})'>
-          ${isSelected ? '✓ Выбрано' : 'Выбрать →'}
+          ${isSelected ? '✓ Selected' : 'Select →'}
         </button>
       </div>
     </div>`;
@@ -142,10 +142,10 @@ function renderPagination(container, total, offset, limit, type) {
 
   container.innerHTML = `
     <button class="page-btn" ${offset === 0 ? 'disabled' : ''}
-      onclick="changePage('${type}', ${offset - limit})">← Назад</button>
-    <span class="page-info">стр. ${page} / ${maxPages} &nbsp;·&nbsp; всего ${total}</span>
+      onclick="changePage('${type}', ${offset - limit})">← Back</button>
+    <span class="page-info">page ${page} / ${maxPages} &nbsp;·&nbsp; total ${total}</span>
     <button class="page-btn" ${offset + limit >= total ? 'disabled' : ''}
-      onclick="changePage('${type}', ${offset + limit})">Вперёд →</button>`;
+      onclick="changePage('${type}', ${offset + limit})">Next →</button>`;
 }
 
 // ── ВЫБОР КОМПОНЕНТА ────────────────────────────────────────────
@@ -157,7 +157,7 @@ function selectPart(type, item) {
   updatePanel();
   updateCheckmarks();
   updatePCVisual();
-  showToast(`${type.toUpperCase()} добавлен в сборку`, 'success');
+  showToast(`${type.toUpperCase()} added to the build`, 'success');
 
   // После выбора CPU — автоматически переходим к материнке с совместимостью
   // После выбора материнки — к RAM с совместимостью
@@ -180,6 +180,7 @@ function selectPart(type, item) {
 // ── ЗАГРУЗЧИКИ ДЛЯ КАЖДОЙ ВКЛАДКИ ───────────────────────────────
 
 function loadCPU() {
+  const search = document.getElementById('cpu-search').value.trim();
   const min   = document.getElementById('cpu-min').value;
   const max   = document.getElementById('cpu-max').value;
   const cores = document.getElementById('cpu-cores').value;
@@ -188,19 +189,21 @@ function loadCPU() {
   const off   = offsets.cpu;
 
   let url = `${API}/components/cpu?limit=${LIMIT}&offset=${off}&sort_by_price=${sort}`;
+  if (search) url += `&name=${encodeURIComponent(search)}`;
   if (min)   url += `&min_price=${min}`;
   if (max)   url += `&max_price=${max}`;
   if (cores) url += `&core_count=${cores}`;
   if (igpu)  url += `&graphics=true`;
 
   fetchAndRender(url, 'results-cpu', 'pagination-cpu', 'cpu', off, item => [
-    ['Ядра',   item.core_count],
-    ['Сокет',  item.socket],
+    ['Cores',  item.core_count],
+    ['Socket', item.socket],
     ['TDP',    item.tdp ? item.tdp + 'W' : null],
   ]);
 }
 
 function loadGPU() {
+  const search = document.getElementById('gpu-search').value.trim();
   const min    = document.getElementById('gpu-min').value;
   const max    = document.getElementById('gpu-max').value;
   const memory = document.getElementById('gpu-memory').value;
@@ -208,53 +211,57 @@ function loadGPU() {
   const off    = offsets.gpu;
 
   let url = `${API}/components/gpu?limit=${LIMIT}&offset=${off}&sort_by_price=${sort}`;
+  if (search) url += `&name=${encodeURIComponent(search)}`;
   if (min)    url += `&min_price=${min}`;
   if (max)    url += `&max_price=${max}`;
   if (memory) url += `&memory=${memory}`;
 
   fetchAndRender(url, 'results-gpu', 'pagination-gpu', 'gpu', off, item => [
-    ['Память',  item.memory ? item.memory + ' GB' : null],
-    ['Чипсет',  item.chipset],
+    ['Memory',  item.memory ? item.memory + ' GB' : null],
+    ['Chipset', item.chipset],
     ['TDP',     item.tdp ? item.tdp + 'W' : null],
   ]);
 }
 
 function loadMotherboard() {
+  const search = document.getElementById('mb-search').value.trim();
   const min  = document.getElementById('mb-min').value;
   const max  = document.getElementById('mb-max').value;
   const sort = document.getElementById('mb-sort').checked;
   const off  = offsets.motherboard;
 
   // Если выбран CPU — используем эндпоинт совместимости
-  if (build.cpu) {
+  if (build.cpu && !search) {
     const cpuName = build.cpu.name;
     document.getElementById('mb-desc').innerHTML = `
-      Показаны <strong style="color:var(--accent)">совместимые</strong> материнские платы для <strong style="color:var(--text)">${cpuName}</strong>.
-      <span class="compat-notice">✦ Фильтр совместимости активен</span>`;
+      Showing <strong style="color:var(--accent)">compatible</strong> motherboards for <strong style="color:var(--text)">${cpuName}</strong>.
+      <span class="compat-notice">✦ Compatibility filter active</span>`;
 
     const url = `${API}/build/compatible_cpu_motherboard?cpu=${encodeURIComponent(cpuName)}&limit=${LIMIT}&offset=${off}`;
     fetchAndRender(url, 'results-motherboard', 'pagination-motherboard', 'motherboard', off, item => [
-      ['Сокет',       item.socket],
-      ['Форм-фактор', item.form_factor],
-      ['Чипсет',      item.chipset],
+      ['Socket',      item.socket],
+      ['Form factor', item.form_factor],
+      ['Chipset',     item.chipset],
     ]);
     return;
   }
 
   // Иначе — все материнки
-  document.getElementById('mb-desc').textContent = 'Выберите материнскую плату. Выберите CPU сначала — тогда покажем только совместимые.';
+  document.getElementById('mb-desc').textContent = 'Choose a motherboard. Select a CPU first to show compatible options only.';
   let url = `${API}/components/motherboard?limit=${LIMIT}&offset=${off}&sort_by_price=${sort}`;
+  if (search) url += `&name=${encodeURIComponent(search)}`;
   if (min) url += `&min_price=${min}`;
   if (max) url += `&max_price=${max}`;
 
   fetchAndRender(url, 'results-motherboard', 'pagination-motherboard', 'motherboard', off, item => [
-    ['Сокет',       item.socket],
-    ['Форм-фактор', item.form_factor],
-    ['Чипсет',      item.chipset],
+    ['Socket',      item.socket],
+    ['Form factor', item.form_factor],
+    ['Chipset',     item.chipset],
   ]);
 }
 
 function loadRAM() {
+  const search = document.getElementById('ram-search').value.trim();
   const min  = document.getElementById('ram-min').value;
   const max  = document.getElementById('ram-max').value;
   const size = document.getElementById('ram-size').value;
@@ -262,117 +269,124 @@ function loadRAM() {
   const off  = offsets.ram;
 
   // Если выбрана материнка — используем совместимость
-  if (build.motherboard) {
+  if (build.motherboard && !search) {
     const mbName = build.motherboard.name;
     document.getElementById('ram-desc').innerHTML = `
-      Показана <strong style="color:var(--accent)">совместимая</strong> RAM для <strong style="color:var(--text)">${mbName}</strong>.
-      <span class="compat-notice">✦ Фильтр совместимости активен</span>`;
+      Showing <strong style="color:var(--accent)">compatible</strong> RAM for <strong style="color:var(--text)">${mbName}</strong>.
+      <span class="compat-notice">✦ Compatibility filter active</span>`;
 
     const url = `${API}/build/compatible_motherboard_ram?motherboard=${encodeURIComponent(mbName)}&limit=${LIMIT}&offset=${off}`;
     fetchAndRender(url, 'results-ram', 'pagination-ram', 'ram', off, item => [
-      ['Объём',   item.size ? item.size + ' GB' : null],
-      ['Скорость', item.speed ? item.speed + ' MHz' : null],
-      ['Тип',     item.type],
+      ['Capacity', item.size ? item.size + ' GB' : null],
+      ['Speed',    item.speed ? item.speed + ' MHz' : null],
+      ['Type',     item.type],
     ]);
     return;
   }
 
-  document.getElementById('ram-desc').textContent = 'Выберите оперативную память. Сначала выберите материнку — тогда покажем только совместимую.';
+  document.getElementById('ram-desc').textContent = 'Choose memory. Select a motherboard first to show compatible options only.';
   let url = `${API}/components/ram?limit=${LIMIT}&offset=${off}&sort_by_price=${sort}`;
+  if (search) url += `&name=${encodeURIComponent(search)}`;
   if (min)  url += `&min_price=${min}`;
   if (max)  url += `&max_price=${max}`;
   if (size) url += `&size=${size}`;
 
   fetchAndRender(url, 'results-ram', 'pagination-ram', 'ram', off, item => [
-    ['Объём',   item.size ? item.size + ' GB' : null],
-    ['Скорость', item.speed ? item.speed + ' MHz' : null],
-    ['Тип',     item.type],
+    ['Capacity', item.size ? item.size + ' GB' : null],
+    ['Speed',    item.speed ? item.speed + ' MHz' : null],
+    ['Type',     item.type],
   ]);
 }
 
 function loadCooler() {
+  const search = document.getElementById('cooler-search').value.trim();
   const min  = document.getElementById('cooler-min').value;
   const max  = document.getElementById('cooler-max').value;
   const sort = document.getElementById('cooler-sort').checked;
   const off  = offsets.cooler;
 
   // Если выбран CPU — совместимые кулеры
-  if (build.cpu) {
+  if (build.cpu && !search) {
     const cpuName = build.cpu.name;
     document.getElementById('cooler-desc').innerHTML = `
-      Совместимые кулеры для <strong style="color:var(--text)">${cpuName}</strong>.
-      <span class="compat-notice">✦ Фильтр совместимости активен</span>`;
+      Compatible coolers for <strong style="color:var(--text)">${cpuName}</strong>.
+      <span class="compat-notice">✦ Compatibility filter active</span>`;
 
     const url = `${API}/build/compatible_cpu_cooler?cpu=${encodeURIComponent(cpuName)}&limit=${LIMIT}&offset=${off}`;
     fetchAndRender(url, 'results-cooler', 'pagination-cooler', 'cooler', off, item => [
       ['TDP',    item.tdp ? item.tdp + 'W' : null],
-      ['Тип',    item.type],
-      ['Сокеты', item.socket],
+      ['Type',   item.type],
+      ['Sockets', item.socket],
     ]);
     return;
   }
 
-  document.getElementById('cooler-desc').textContent = 'Выберите кулер. Сначала выберите CPU — тогда покажем только совместимые.';
+  document.getElementById('cooler-desc').textContent = 'Choose a cooler. Select a CPU first to show compatible options only.';
   let url = `${API}/components/cpu-cooler?limit=${LIMIT}&offset=${off}&sort_by_price=${sort}`;
+  if (search) url += `&name=${encodeURIComponent(search)}`;
   if (min) url += `&min_price=${min}`;
   if (max) url += `&max_price=${max}`;
 
   fetchAndRender(url, 'results-cooler', 'pagination-cooler', 'cooler', off, item => [
     ['TDP',  item.tdp ? item.tdp + 'W' : null],
-    ['Тип',  item.type],
+    ['Type', item.type],
   ]);
 }
 
 function loadPSU() {
+  const search = document.getElementById('psu-search').value.trim();
   const min  = document.getElementById('psu-min').value;
   const max  = document.getElementById('psu-max').value;
   const sort = document.getElementById('psu-sort').checked;
   const off  = offsets.psu;
 
   // Если выбраны CPU и GPU — используем совместимость по мощности
-  if (build.cpu && build.gpu) {
+  if (build.cpu && build.gpu && !search) {
     const cpuName = build.cpu.name;
     const gpuName = build.gpu.chipset ?? build.gpu.name;
     document.getElementById('psu-desc').innerHTML = `
-      Совместимые БП для <strong style="color:var(--text)">${cpuName}</strong> + <strong style="color:var(--text)">${gpuName}</strong>.
-      <span class="compat-notice">✦ Фильтр по мощности активен</span>`;
+      Compatible power supplies for <strong style="color:var(--text)">${cpuName}</strong> + <strong style="color:var(--text)">${gpuName}</strong>.
+      <span class="compat-notice">✦ Power filter active</span>`;
 
     const url = `${API}/build/compatible_psu_to_everything?cpu=${encodeURIComponent(cpuName)}&gpu=${encodeURIComponent(gpuName)}&limit=${LIMIT}&offset=${off}`;
     fetchAndRender(url, 'results-psu', 'pagination-psu', 'psu', off, item => [
-      ['Мощность',  item.wattage ? item.wattage + 'W' : null],
-      ['Рейтинг',   item.efficiency_rating],
-      ['Модульный', item.modular],
+      ['Wattage', item.wattage ? item.wattage + 'W' : null],
+      ['Rating',  item.efficiency_rating],
+      ['Modular', item.modular],
     ]);
     return;
   }
 
-  document.getElementById('psu-desc').textContent = 'Выберите блок питания. Выберите CPU и GPU — тогда подберём подходящий по мощности.';
+  document.getElementById('psu-desc').textContent = 'Choose a power supply. Select a CPU and GPU first to match wattage.';
   let url = `${API}/components/power-supply?limit=${LIMIT}&offset=${off}&sort_by_price=${sort}`;
+  if (search) url += `&name=${encodeURIComponent(search)}`;
   if (min) url += `&min_price=${min}`;
   if (max) url += `&max_price=${max}`;
 
   fetchAndRender(url, 'results-psu', 'pagination-psu', 'psu', off, item => [
-    ['Мощность', item.wattage ? item.wattage + 'W' : null],
-    ['Рейтинг',  item.efficiency_rating],
-    ['Модульный', item.modular],
+    ['Wattage', item.wattage ? item.wattage + 'W' : null],
+    ['Rating',  item.efficiency_rating],
+    ['Modular', item.modular],
   ]);
 }
 
 function loadStorage() {
+  const search = document.getElementById('storage-search').value.trim();
   const min  = document.getElementById('storage-min').value;
   const max  = document.getElementById('storage-max').value;
   const sort = document.getElementById('storage-sort').checked;
   const off  = offsets.storage;
 
-  // Эндпоинт storage имеет пробел в URL — кодируем
-  let url = `${API}/components/storage(SSD%2FHDD)?limit=${LIMIT}&offset=${off}&sort_by_price=${sort}`;
+  // Эндпоинт storage на бэкенде: /components/storage(SSD_HDD)
+  let url = `${API}/components/storage(SSD_HDD)?limit=${LIMIT}&offset=${off}&sort_by_price=${sort}`;
+  if (search) url += `&name=${encodeURIComponent(search)}`;
   if (min) url += `&min_price=${min}`;
   if (max) url += `&max_price=${max}`;
 
   fetchAndRender(url, 'results-storage', 'pagination-storage', 'storage', off, item => [
-    ['Объём',  item.capacity],
-    ['Тип',    item.type],
-    ['Форм',   item.form_factor],
+    ['Capacity', item.capacity],
+    ['Type',     item.type],
+    ['Form',     item.form_factor],
   ]);
 }
 
@@ -381,13 +395,13 @@ function renderSummary() {
   const container = document.getElementById('summary-content');
 
   const parts = [
-    { key: 'cpu',         label: 'ПРОЦЕССОР' },
-    { key: 'gpu',         label: 'ВИДЕОКАРТА' },
-    { key: 'motherboard', label: 'МАТЕРИНСКАЯ ПЛАТА' },
-    { key: 'ram',         label: 'ОПЕРАТИВНАЯ ПАМЯТЬ' },
-    { key: 'cooler',      label: 'ОХЛАЖДЕНИЕ' },
-    { key: 'psu',         label: 'БЛОК ПИТАНИЯ' },
-    { key: 'storage',     label: 'НАКОПИТЕЛЬ' },
+    { key: 'cpu',         label: 'PROCESSOR' },
+    { key: 'motherboard', label: 'MOTHERBOARD' },
+    { key: 'ram',         label: 'RAM' },
+    { key: 'cooler',      label: 'COOLING' },
+    { key: 'gpu',         label: 'VIDEO CARD' },
+    { key: 'psu',         label: 'POWER SUPPLY' },
+    { key: 'storage',     label: 'STORAGE DEVICE' },
   ];
 
   const rows = parts.map(({ key, label }) => {
@@ -395,7 +409,7 @@ function renderSummary() {
     if (!item) return `
       <div class="summary-row empty">
         <span class="summary-type">${label}</span>
-        <span class="summary-empty-name">не выбрано</span>
+        <span class="summary-empty-name">not selected</span>
         <span class="summary-price" style="color:var(--text3)">—</span>
       </div>`;
 
@@ -414,10 +428,10 @@ function renderSummary() {
     <div class="summary-grid">
       ${rows}
       <div class="summary-total-row">
-        <span class="summary-total-label">ИТОГО</span>
+        <span class="summary-total-label">TOTAL</span>
         <span class="summary-total-price">$${total}</span>
       </div>
-      ${hasAny ? `<button class="summary-go-btn" onclick="clearBuild()">✕ Начать заново</button>` : ''}
+      ${hasAny ? `<button class="summary-go-btn" onclick="clearBuild()">✕ Start over</button>` : ''}
     </div>`;
 }
 
@@ -438,7 +452,7 @@ function clearBuild() {
   updateCheckmarks();
   updatePCVisual();
   switchTab('cpu');
-  showToast('Сборка очищена', 'info');
+  showToast('Build cleared', 'info');
 }
 
 // Суммарная цена
@@ -476,7 +490,7 @@ function updatePanel() {
   const items = Object.entries(build);
 
   if (!items.length) {
-    container.innerHTML = '<div class="panel-empty">Начните добавлять компоненты</div>';
+    container.innerHTML = '<div class="panel-empty">Start adding components</div>';
     return;
   }
 
@@ -497,7 +511,7 @@ function updatePanel() {
     </div>
   `).join('') + `
     <div class="panel-total">
-      <span class="panel-total-label">ИТОГО</span>
+      <span class="panel-total-label">TOTAL</span>
       <span class="panel-total-val">$${total}</span>
     </div>`;
 }
