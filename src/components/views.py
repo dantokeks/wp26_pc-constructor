@@ -126,7 +126,7 @@ async def get_power_supply(
         offset=offset
     )
 
-@router.get("/storage(SSD/HDD)")
+@router.get("/storage(SSD_HDD)")
 async def get_storage(
     min_price: int = None, 
     max_price: int = None, 
