@@ -166,3 +166,4 @@ If a search field is used on a tab, the frontend performs a direct component sea
 - Selected parts are stored in browser `localStorage` under `pc-build`.
 - Use the "Clear build" button to reset the current configuration.
 - The frontend is a small single-page app without React, Vue, or a build step.
+- The original `opendata-2026-04-14-000002+0000.jsonl` import file is not stored in Git because it is larger than GitHub's file size limit. The application uses the processed JSON files in `src/data`.
